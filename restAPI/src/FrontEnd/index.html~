@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Student Management System</h1>
+
+    <!-- Fetch all students -->
+    <div class="section">
+        <h2>All Students</h2>
+        <button id="fetchAll">Fetch All Students</button>
+        <ul id="studentList"></ul>
+    </div>
+
+    <!-- Fetch students by course name -->
+    <div class="section">
+        <h2>Find Students by Course</h2>
+        <input type="text" id="courseName" placeholder="Enter Course Name">
+        <button id="fetchByCourse">Search</button>
+        <ul id="courseStudentList"></ul>
+    </div>
+
+    <!-- Add a new student -->
+    <div class="section">
+        <h2>Add New Student</h2>
+        <input type="text" id="studentName" placeholder="Student Name">
+        <input type="text" id="studentCourse" placeholder="Course Name">
+        <button id="addStudent">Add Student</button>
+    </div>
+
+    <!-- Delete a student -->
+    <div class="section">
+        <h2>Delete Student</h2>
+        <input type="number" id="studentId" placeholder="Student ID">
+        <button id="deleteStudent">Delete</button>
+    </div>
+</div>
+
+<script>
+    const apiUrl = "http://localhost:8080/std";
+
+    // Fetch all students
+    document.getElementById("fetchAll").addEventListener("click", async () => {
+        const response = await fetch(`${apiUrl}/get`);
+        const students = await response.json();
+        const studentList = document.getElementById("studentList");
+        studentList.innerHTML = "";
+        students.forEach(student => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>ID:</strong> ${student.id}, <strong>Name:</strong> ${student.name}, <strong>Course:</strong> ${student.course}`;
+            studentList.appendChild(li);
+        });
+    });
+
+    // Fetch students by course name
+    document.getElementById("fetchByCourse").addEventListener("click", async () => {
+        const courseName = document.getElementById("courseName").value;
+        const response = await fetch(`${apiUrl}/get/${courseName}`);
+        const students = await response.json();
+        const courseStudentList = document.getElementById("courseStudentList");
+        courseStudentList.innerHTML = "";
+        students.forEach(student => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>ID:</strong> ${student.id}, <strong>Name:</strong> ${student.name}`;
+            courseStudentList.appendChild(li);
+        });
+    });
+
+    // Add a new student
+    document.getElementById("addStudent").addEventListener("click", async () => {
+        const studentName = document.getElementById("studentName").value;
+        const studentCourse = document.getElementById("studentCourse").value;
+
+        const response = await fetch(`${apiUrl}/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: studentName, course: studentCourse })
+        });
+        const result = await response.json();
+        alert(`Student Added: ${result.name} (ID: ${result.id})`);
+    });
+
+    // Delete a student
+    document.getElementById("deleteStudent").addEventListener("click", async () => {
+        const studentId = document.getElementById("studentId").value;
+
+        await fetch(`${apiUrl}/delete/${studentId}`, { method: "DELETE" });
+        alert(`Student with ID: ${studentId} deleted.`);
+    });
+</script>
+</body>
+</html>

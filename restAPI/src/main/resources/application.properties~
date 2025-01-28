@@ -1,0 +1,5 @@
+spring.application.name=restAPISpringBootProject
+
+spring.datasource.url=jdbc:mysql://localhost/test
+spring.datasource.username=root
+spring.datasource.password=Manan@3110
